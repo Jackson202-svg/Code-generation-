@@ -20,3 +20,5 @@ Includes interactive and beginner-friendly features.
 
 ## ⚙️ How to run
 Open `snippet_html_1234.html` in your browser to view the webpage.
+
+Yoy can go to https://chatgpt.com/ if you want to chat with a chatbot like ChatGPT

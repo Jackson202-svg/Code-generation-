@@ -1,0 +1,150 @@
+import openai
+import random
+import os
+
+# --- Set your OpenAI API key here ---
+openai.api_key = "YOUR_OPENAI_API_KEY"
+
+# --- Predefined fallback snippets ---
+snippets = {
+    'HTML': [
+        '<!DOCTYPE html>\n<html>\n<head>\n<title>My Page</title>\n</head>\n<body>\n<h1>Hello World</h1>\n</body>\n</html>'
+    ],
+    'CSS': [
+        'body {\n  background-color: #f0f0f0;\n  font-family: Arial;\n}'
+    ],
+    'JS': [
+        'console.log("Hello World");'
+    ],
+    'PYTHON': [
+        'print("Hello World")',
+        'def add(a, b):\n    return a + b'
+    ],
+    'JAVA': [
+        'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello World");\n    }\n}'
+    ],
+    'C': [
+        '#include <stdio.h>\nint main() {\n    printf("Hello World");\n    return 0;\n}'
+    ],
+    'CPP': [
+        '#include <iostream>\nusing namespace std;\nint main() {\n    cout << "Hello World";\n    return 0;\n}'
+    ],
+    'CSHARP': [
+        'using System;\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello World");\n    }\n}'
+    ],
+    'GO': [
+        'package main\nimport "fmt"\nfunc main() {\n    fmt.Println("Hello World")\n}'
+    ],
+    'RUBY': [
+        'puts "Hello World"'
+    ],
+    'PHP': [
+        '<?php\necho "Hello World";\n?>'
+    ],
+    'TYPESCRIPT': [
+        'let message: string = "Hello World";\nconsole.log(message);'
+    ],
+    'SWIFT': [
+        'import Swift\nprint("Hello World")'
+    ],
+    'KOTLIN': [
+        'fun main() {\n    println("Hello World")\n}'
+    ],
+    'RUST': [
+        'fn main() {\n    println!("Hello World");\n}'
+    ],
+    'SQL': [
+        'SELECT "Hello World";'
+    ]
+}
+
+# --- Function to generate snippet via OpenAI ---
+def generate_openai_snippet(language):
+    prompt = f"Write a small, working {language} code snippet that is beginner-friendly."
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=250
+        )
+        snippet = response.choices[0].message.content.strip()
+        return f"--- {language} Snippet (AI Generated) ---\n{snippet}\n"
+    except Exception as e:
+        # fallback to random predefined snippet
+        return f"Error generating AI snippet: {e}\nUsing fallback snippet:\n{random.choice(snippets[language.upper()])}\n"
+
+# --- Generate random snippet ---
+def generate_random_code(language=None):
+    if language and language.upper() in snippets:
+        chosen_language = language.upper()
+    else:
+        chosen_language = random.choice(list(snippets.keys()))
+    return generate_openai_snippet(chosen_language)
+
+# --- Generate multiple snippets ---
+def generate_multiple_snippets(count=3, language=None):
+    results = ""
+    for _ in range(count):
+        results += generate_random_code(language) + "\n"
+    return results
+
+# --- Save snippet to file ---
+def save_snippet_to_file(snippet, language):
+    extensions = {
+        'HTML': 'html', 'CSS': 'css', 'JS': 'js', 'PYTHON': 'py', 'JAVA': 'java', 
+        'C': 'c', 'CPP': 'cpp', 'CSHARP': 'cs', 'GO': 'go', 'RUBY': 'rb', 
+        'PHP': 'php', 'TYPESCRIPT': 'ts', 'SWIFT': 'swift', 'KOTLIN': 'kt', 
+        'RUST': 'rs', 'SQL': 'sql'
+    }
+    ext = extensions.get(language.upper(), 'txt')
+    filename = f"snippet_{language.lower()}_{random.randint(1000,9999)}.{ext}"
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write(snippet)
+    print(f"Snippet saved to {filename}")
+
+# --- Main program ---
+def main():
+    print("=== AI Multi-Language Code Snippet Generator ===")
+    while True:
+        print("\nOptions:")
+        print("1. Generate a random snippet")
+        print("2. Generate snippet for a specific language")
+        print("3. Generate multiple random snippets")
+        print("4. Exit")
+        choice = input("Choose an option (1-4): ")
+
+        if choice == "1":
+            snippet = generate_random_code()
+            print(snippet)
+            save = input("Save snippet to file? (y/n): ")
+            if save.lower() == "y":
+                language = snippet.split()[1]  # Extract language from snippet header
+                save_snippet_to_file(snippet, language)
+        elif choice == "2":
+            lang = input("Enter language (HTML, CSS, JS, PYTHON, JAVA, C, CPP, CSHARP, GO, RUBY, PHP, TYPESCRIPT, SWIFT, KOTLIN, RUST, SQL): ")
+            snippet = generate_random_code(lang)
+            print(snippet)
+            save = input("Save snippet to file? (y/n): ")
+            if save.lower() == "y":
+                save_snippet_to_file(snippet, lang)
+        elif choice == "3":
+            num = input("How many snippets to generate? ")
+            if num.isdigit():
+                language = input("Enter language or leave blank for random: ")
+                language = language if language.strip() else None
+                snippets_text = generate_multiple_snippets(int(num), language)
+                print(snippets_text)
+                save = input("Save all snippets to files? (y/n): ")
+                if save.lower() == "y":
+                    for lang in (language.upper(),) if language else snippets.keys():
+                        save_snippet_to_file(snippets_text, lang)
+            else:
+                print("Please enter a valid number.")
+        elif choice == "4":
+            print("Goodbye!")
+            break
+        else:
+            print("Invalid choice. Try again.")
+
+if __name__ == "__main__":
+    main()

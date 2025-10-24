@@ -23,3 +23,6 @@ Open `snippet_html_1234.html` in your browser to view the webpage.
 
 ## 💬 Chat with a chstbot 
 Yoy can go to https://chatgpt.com/ or https://copilot.microsoft.com/ if you want to chat with a chatbot like ChatGPT and Microsoft Copilot
+
+## <img width="480" height="480" alt="image" src="https://github.com/user-attachments/assets/30e7db53-2abf-4eb4-b1f2-b639f7e737b3" />
+this ReadMe.md is a thing thst i make and thid tell you ho to run the code 
